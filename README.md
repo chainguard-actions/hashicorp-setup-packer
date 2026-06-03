@@ -8,6 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v2.0.1 | [`v2.0.1`](https://github.com/chainguard-actions/hashicorp-setup-packer/tree/v2.0.1) | [`ecc5516`](https://github.com/hashicorp/setup-packer/commit/ecc5516821087666a672c0d280a0084ea6d9aafd) |
 | v3.0.0 | [`v3.0.0`](https://github.com/chainguard-actions/hashicorp-setup-packer/tree/v3.0.0) | [`d38faf1`](https://github.com/hashicorp/setup-packer/commit/d38faf1295e2cddabf3ce395dc78405b7877be2d) |
 
 ## Privacy
