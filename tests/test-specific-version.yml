@@ -1,0 +1,29 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          version: "1.10.0"
+      - name: Assert packer is on PATH
+        run: |
+          echo "Checking packer on PATH..."
+          if ! command -v packer >/dev/null 2>&1; then
+            echo "FAIL: packer not found on PATH"
+            exit 1
+          fi
+          echo "PASS: packer found at $(command -v packer)"
+      - name: Assert packer reports correct version
+        run: |
+          PACKER_VERSION=$(packer version 2>&1 | head -n1)
+          echo "packer version output: $PACKER_VERSION"
+          if ! echo "$PACKER_VERSION" | grep -q "1.10.0"; then
+            echo "FAIL: expected packer version to contain '1.10.0', got: $PACKER_VERSION"
+            exit 1
+          fi
+          echo "PASS: packer reports correct version 1.10.0"

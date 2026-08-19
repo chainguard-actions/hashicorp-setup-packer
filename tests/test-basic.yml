@@ -1,0 +1,25 @@
+name: Test basic usage (latest version)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          version: latest
+      - name: Assert packer is on PATH
+        run: |
+          echo "Checking packer on PATH..."
+          if ! command -v packer >/dev/null 2>&1; then
+            echo "FAIL: packer not found on PATH"
+            exit 1
+          fi
+          echo "PASS: packer found at $(command -v packer)"
+      - name: Assert packer runs successfully
+        run: |
+          echo "Running packer version..."
+          packer version
+          echo "PASS: packer version ran successfully"
