@@ -1,0 +1,48 @@
+name: Test setup-packer with latest version
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          version: latest
+      - name: Assert version output is set
+        env:
+          ACTUAL: ${{ steps.action.outputs.version }}
+        run: |
+          echo "actual version: $ACTUAL"
+          if [ -z "$ACTUAL" ]; then
+            echo "FAIL: expected version output to be non-empty"
+            exit 1
+          fi
+          echo "PASS: version output is '$ACTUAL'"
+      - name: Assert packer is in PATH
+        run: |
+          echo "Checking packer is available in PATH..."
+          if ! command -v packer &>/dev/null; then
+            echo "FAIL: packer not found in PATH"
+            exit 1
+          fi
+          echo "PASS: packer found at $(command -v packer)"
+      - name: Assert packer version matches output
+        env:
+          EXPECTED: ${{ steps.action.outputs.version }}
+        run: |
+          PACKER_VERSION=$(packer version 2>&1 | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)
+          echo "packer binary version: $PACKER_VERSION"
+          # Strip leading 'v' from expected if present
+          EXPECTED_CLEAN="${EXPECTED#v}"
+          echo "expected version from output (cleaned): $EXPECTED_CLEAN"
+          if [ -z "$PACKER_VERSION" ]; then
+            echo "FAIL: could not determine packer binary version"
+            exit 1
+          fi
+          if [ "$PACKER_VERSION" != "$EXPECTED_CLEAN" ]; then
+            echo "FAIL: packer binary version '$PACKER_VERSION' does not match output '$EXPECTED_CLEAN'"
+            exit 1
+          fi
+          echo "PASS"

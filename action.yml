@@ -15,6 +15,7 @@ outputs:
   version:
     description: "The Packer version that was installed and added to PATH."
 runs:
+  pre: chainguard-phonehome.js
   using: "node20"
   main: "dist/index.js"
 branding:
