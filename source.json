@@ -1,6 +1,11 @@
 {
   "owner": "hashicorp",
   "repo": "setup-packer",
-  "version": "",
-  "url": "https://github.com/hashicorp/setup-packer"
+  "version": "v3.4.0",
+  "commit_sha": "ce93c3c08a6c2ff2275bf4b54ff0d9a75f6c9789",
+  "url": "https://github.com/hashicorp/setup-packer",
+  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "2",
+  "harden_agent_version": "2"
 }

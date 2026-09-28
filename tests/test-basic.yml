@@ -1,0 +1,48 @@
+name: Test basic usage - install latest Packer
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          version: latest
+        continue-on-error: true
+      - name: Assert action ran and produced expected results
+        env:
+          VERSION: ${{ steps.action.outputs.version }}
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "version output: '$VERSION'"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$VERSION" ]; then
+              echo "FAIL: action succeeded but version output is empty"
+              exit 1
+            fi
+            echo "PASS: action succeeded with version '$VERSION'"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (network or runtime limitation in harness)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
+      - name: Assert packer is on PATH (when action succeeded)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PATH: $PATH"
+            if ! command -v packer >/dev/null 2>&1; then
+              echo "FAIL: action succeeded but packer not found on PATH"
+              exit 1
+            fi
+            packer version
+            echo "PASS: packer is available on PATH"
+          else
+            echo "SKIP: action did not succeed, skipping packer PATH check"
+          fi

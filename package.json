@@ -1,0 +1,36 @@
+{
+  "name": "setup-packer",
+  "version": "3.4.0",
+  "description": "A GitHub Action to install a specific version of HashiCorp Packer and add it to PATH.",
+  "keywords": [
+    "github-actions",
+    "hashicorp",
+    "packer"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:hashicorp/setup-packer.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Kerim Satirli <kerim@hashicorp.com> & Jenna Goldstrich <jgoldstrich@hashicorp.com>",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && ncc build --no-cache",
+    "fmt": "prettier --write 'src/*.ts'",
+    "copywrite": "copywrite headers && copywrite license"
+  },
+  "dependencies": {
+    "@actions/core": "^2.0.3",
+    "@actions/http-client": "^3.0.2",
+    "@hashicorp/github-actions-core": "github:hashicorp/github-actions-core#v1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@types/semver": "^7.5.8",
+    "typescript": "^5.5.4"
+  },
+  "overrides": {
+    "axios": "^1.15.0",
+    "undici": "6.24.0"
+  }
+}

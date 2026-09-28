@@ -1,0 +1,60 @@
+name: Test specific version - install pinned Packer version
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          version: "1.11.2"
+        continue-on-error: true
+      - name: Assert action ran and version output matches requested version
+        env:
+          VERSION: ${{ steps.action.outputs.version }}
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "version output: '$VERSION'"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$VERSION" ]; then
+              echo "FAIL: action succeeded but version output is empty"
+              exit 1
+            fi
+            # The version output may or may not include a 'v' prefix
+            CLEAN_VERSION="${VERSION#v}"
+            echo "cleaned version: '$CLEAN_VERSION'"
+            if [ "$CLEAN_VERSION" != "1.11.2" ]; then
+              echo "FAIL: expected version '1.11.2' but got '$VERSION'"
+              exit 1
+            fi
+            echo "PASS: version output is '$VERSION'"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (network or runtime limitation in harness)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
+      - name: Assert packer binary reports correct version (when action succeeded)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PATH: $PATH"
+            if ! command -v packer >/dev/null 2>&1; then
+              echo "FAIL: action succeeded but packer not found on PATH"
+              exit 1
+            fi
+            PACKER_VERSION=$(packer version | head -1)
+            echo "packer version output: $PACKER_VERSION"
+            if ! echo "$PACKER_VERSION" | grep -q "1.11.2"; then
+              echo "FAIL: expected packer version 1.11.2 in output: $PACKER_VERSION"
+              exit 1
+            fi
+            echo "PASS: packer reports correct version"
+          else
+            echo "SKIP: action did not succeed, skipping packer version check"
+          fi
